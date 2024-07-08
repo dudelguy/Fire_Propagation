@@ -14,7 +14,7 @@ The following sequence of methods is used to assign a fire date to every pixel o
 6. Several artifacts can be induced by using the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
 7. In a last step, the calculated fire dates are checked for realistic propgation. If the sequence of propagation is not plausible, the corresponding burned area is discarded and no raster files are saved. Otherwise, every steps of the fire propagation is saved as an individual raster file.
 
-This procedure is explained in the following figure:
+The following figure illustrates this procedure:
 
 
 
