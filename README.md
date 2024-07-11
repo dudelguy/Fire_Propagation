@@ -10,7 +10,7 @@ The following sequence of methods is used to assign a fire date to every pixel o
 2. The dataset of active fire detections is reduced to all points that fit a self-defined spatial and temporal range of the burned area polygon.
 3. A convex hull is calculated for all active fire detection points of the same aquisition time.
 4. Beginning with the youngest date, all convex hulls are iteratively imprinted onto the burned area polygon. This way, pixels with multiple burn dates are overwritten every time a convex hull with an oder burn date is imprinted, ensuring correct sequencing.
-5. The remaining pixels that are assigned using the k-nearest neighbor algorithm with k=1. This means that these pixels are assigned to the fire date of their geometrically nearest neighbor.
+5. The remaining pixels are assigned using the k-nearest neighbor algorithm with k=1. This means that these pixels are assigned to the fire date of their geometrically nearest neighbor.
 6. Several artifacts can be induced by using the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
 7. In a last step, the calculated fire dates are checked for realistic propgation. If the sequence of propagation is not plausible, the corresponding burned area is discarded and no raster files are saved. Otherwise, every steps of the fire propagation is saved as an individual raster file.
 
