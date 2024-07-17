@@ -24,15 +24,14 @@ The following sequence of methods is used to assign a fire date to every pixel o
 
 # 5. Often, not all pixelas are covered by the convex hulls. The remaining pixels are assigned using the k-nearest neighbor algorithm with k=1. This means that these pixels are assigned to the fire date of their geometrically nearest neighbor.
 
-<img src="https://github.com/user-attachments/assets/12b49eeb-a09e-46bd-8c7b-ba868ef98ed1" width=50% height=50%>
+<img align="center" src="https://github.com/user-attachments/assets/12b49eeb-a09e-46bd-8c7b-ba868ef98ed1" width=50% height=50%>
 
 # 6. Several artifacts can be induced by using the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
 
-<img src="https://github.com/user-attachments/assets/a7a88e2b-c2c0-4e04-863b-ac63463b4c90" width=50% height=50%>
+<img align="center" src="https://github.com/user-attachments/assets/a7a88e2b-c2c0-4e04-863b-ac63463b4c90" width=50% height=50%>
 
 # 7. In a last step, the calculated fire dates are checked for realistic propagation. If the sequence of propagation is not plausible, the corresponding burned area is discarded. Otherwise, every steps of the fire propagation is saved as an individual raster file.
-
-![final_propagation](https://github.com/user-attachments/assets/e6aee86e-eb86-4d2f-8bde-211b18c479e6)
+<img align="center" src="https://github.com/user-attachments/assets/e6aee86e-eb86-4d2f-8bde-211b18c479e6">
 
 
 Most applications of the fire propagation database will involve its combination with different meteorological and/or surface related information. One option to gather such information is Google Earth Engine (GEE), which holds a wide variety of different collections from the earth observation spectrum. Instead of including somewhat arbitrarily chosen datasets directly to the fire propagation database, we decided to provide the necessary code for one meteorological and one remote sensing dataset, i.e. ERA5 and Sentine-2, respectively.
