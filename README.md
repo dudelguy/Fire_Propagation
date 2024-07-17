@@ -7,20 +7,20 @@ Every burned area has at least two distinct raster files, each indicating the bu
 
 The following sequence of methods is used to assign a fire date to every pixel of the burned area:
 # 1. The distinct burned area is selected from the burned area dataset. Active fire detections of the same country and the same year are loaded.
-
-![step_1_new](https://github.com/user-attachments/assets/88f6760f-f0c2-47ca-a6de-f8d0c874a300)
-
+<p align="center">
+<img src="https://github.com/user-attachments/assets/88f6760f-f0c2-47ca-a6de-f8d0c874a300" width=75% height=75%>
+</p>
 # 2. The dataset of active fire detections is reduced to points that fit a self-defined spatial and temporal range of the burned area polygon.
-
-![step_2_new](https://github.com/user-attachments/assets/4db1bc37-053d-4472-9df9-6055a6050dc4)
-
+<p align="center">
+<img src="https://github.com/user-attachments/assets/4db1bc37-053d-4472-9df9-6055a6050dc4" width=75% height=75%>
+</p>
 # 3. A convex hull is calculated for all active fire detection points of the same aquisition time.
-
-![step_3_new](https://github.com/user-attachments/assets/57a57c88-137b-4ff2-b7e3-3c684f93d332)
-
+<p align="center">
+<img src="https://github.com/user-attachments/assets/57a57c88-137b-4ff2-b7e3-3c684f93d332" width=75% height=75%>
+</p>
 # 4. Beginning with the youngest date, all convex hulls are iteratively imprinted onto the burned area polygon. This way, pixels with multiple burn dates are overwritten every time a convex hull with another burn date is imprinted, ensuring correct sequencing.
 <p align="center">
-<img src="[https://github.com/user-attachments/assets/b11be3a4-c45b-4da3-a871-8a9a8268a645" width=50% height=50%>
+<img src="[https://github.com/user-attachments/assets/b11be3a4-c45b-4da3-a871-8a9a8268a645" width=75% height=75%>
 </p>
 # 5. Often, not all pixelas are covered by the convex hulls. The remaining pixels are assigned using the k-nearest neighbor algorithm with k=1. This means that these pixels are assigned to the fire date of their geometrically nearest neighbor.
 <p align="center">
