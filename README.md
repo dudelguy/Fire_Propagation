@@ -17,6 +17,7 @@ The distinct burned area is selected from the burned area dataset. Active fire d
 ### 2. Reduce active fire detections 
 The dataset of active fire detections is reduced to points that fit a self-defined spatial and temporal range of the burned area polygon.
 
+
 <p align="center">
 <img src="https://github.com/user-attachments/assets/4db1bc37-053d-4472-9df9-6055a6050dc4" width=75% height=75%>
 </p>
@@ -45,12 +46,14 @@ Often, not all pixelas are covered by the convex hulls. The remaining pixels are
 ### 6. Remove artifacts
 Several artifacts can be induced by using the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
 
+
 <p align="center">
 <img src="https://github.com/user-attachments/assets/a7a88e2b-c2c0-4e04-863b-ac63463b4c90" width=50% height=50%>
 </p>
 
 ### 7. Check fire propagation
 In a last step, the calculated fire dates are checked for realistic propagation. If the sequence of propagation is not plausible, the corresponding burned area is discarded. Otherwise, every steps of the fire propagation is saved as an individual raster file.
+
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/e6aee86e-eb86-4d2f-8bde-211b18c479e6">
