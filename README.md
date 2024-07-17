@@ -19,7 +19,7 @@ The following sequence of methods is used to assign a fire date to every pixel o
 
 ### 3. A convex hull is calculated for all active fire detection points of the same aquisition time.
 <p align="center">
-<img src="https://github.com/user-attachments/assets/57a57c88-137b-4ff2-b7e3-3c684f93d332" width=75% height=75%>
+<img src="https://github.com/user-attachments/assets/57a57c88-137b-4ff2-b7e3-3c684f93d332" width=65% height=65%>
 </p>
 
 ### 4. Beginning with the youngest date, all convex hulls are iteratively imprinted onto the burned area polygon. This way, pixels with multiple burn dates are overwritten every time a convex hull with another burn date is imprinted, ensuring correct sequencing.
