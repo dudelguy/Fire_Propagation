@@ -43,8 +43,7 @@ Often, not all pixelas are covered by the convex hulls. The remaining pixels are
 </p>
 
 ### 6. Remove artifacts
-Several artifacts can be induced by using the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
-
+Several artifacts can be appear due to the use of the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/a7a88e2b-c2c0-4e04-863b-ac63463b4c90" width=50% height=50%>
@@ -52,7 +51,6 @@ Several artifacts can be induced by using the nearest neighbor algorithm. These 
 
 ### 7. Check fire propagation
 In a last step, the calculated fire dates are checked for realistic propagation. If the sequence of propagation is not plausible, the corresponding burned area is discarded. Otherwise, every steps of the fire propagation is saved as an individual raster file.
-
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/e6aee86e-eb86-4d2f-8bde-211b18c479e6">
