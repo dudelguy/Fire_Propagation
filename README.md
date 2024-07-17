@@ -24,7 +24,7 @@ The following sequence of methods is used to assign a fire date to every pixel o
 
 ### 4. Beginning with the youngest date, all convex hulls are iteratively imprinted onto the burned area polygon. This way, pixels with multiple burn dates are overwritten every time a convex hull with another burn date is imprinted, ensuring correct sequencing.
 <p align="center">
-<img src="https://github.com/user-attachments/assets/b11be3a4-c45b-4da3-a871-8a9a8268a645" width=75% height=75%>
+<img src="https://github.com/user-attachments/assets/b11be3a4-c45b-4da3-a871-8a9a8268a645" width=50% height=50%>
 </p>
 
 ### 5. Often, not all pixelas are covered by the convex hulls. The remaining pixels are assigned using the k-nearest neighbor algorithm with k=1. This means that these pixels are assigned to the fire date of their geometrically nearest neighbor.
