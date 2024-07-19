@@ -21,8 +21,8 @@ The dataset of active fire detections is reduced to points that fit a self-defin
 <img src="https://github.com/user-attachments/assets/4db1bc37-053d-4472-9df9-6055a6050dc4" width=75% height=75%>
 </p>
 
-### 3. Calcualte convex hull
-A convex hull is calculated for all active fire detection points of the same aquisition time. According to the active fire detection algorithm devloped by [Schroeder and Gigilio 2016](https://viirsland.gsfc.nasa.gov/PDF/VIIRS_activefire_375m_ATBD.pdf), thermal anomalies are based on temperature differences of the investigated pixel to its surrounding pixels. If larger areas are on fire, all surrounding pixels will show large temperature values as well, and, as a result, no anomaly will be detected and the pixel will not be classified as an active fire pixel. In these cases, only the edges of a fire will be detected as active, although the area in between potentially burns, too. To account for these situations, the convex hull was calculated and all affected pixels were assumed to be burning.  
+### 3. Calculate convex hull
+A convex hull is calculated for all active fire detection points of the same acquisition time. According to the active fire detection algorithm developed by [Schroeder and Gigilio 2016](https://viirsland.gsfc.nasa.gov/PDF/VIIRS_activefire_375m_ATBD.pdf), thermal anomalies are based on temperature differences of the investigated pixel to a defined number of surrounding pixels. If larger areas are on fire, all surrounding pixels show large temperature values as well, and, as a result, no anomaly will be detected and the pixel will not be classified as an active fire pixel. In such cases, only the edges of a fire area will be detected as active, although the area in between potentially burns, too. To account for these situations, the convex hull was calculated and all affected pixel inside of this hull were assumed to be burning.  
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/57a57c88-137b-4ff2-b7e3-3c684f93d332" width=65% height=65%>
