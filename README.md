@@ -36,14 +36,14 @@ Beginning with the youngest date, all convex hulls are iteratively imprinted ont
 </p>
 
 ### 5. Fill remaining pixels with k-nearest neighbor
-Often, not all pixelas are covered by the convex hulls. The remaining pixels are assigned using the k-nearest neighbor algorithm with k=1. This means that these pixels are assigned to the fire date of their geometrically nearest neighbor.
+Often, not all pixels of the burned area are covered by only filling the convex hulls. The remaining pixels are assigned using the k-nearest neighbor algorithm with k=1, assigning them to the fire date of their geometrically nearest neighbor.
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/12b49eeb-a09e-46bd-8c7b-ba868ef98ed1" width=50% height=50%>
 </p>
 
 ### 6. Remove artifacts
-Several artifacts can be appear due to the use of the nearest neighbor algorithm. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
+The nearest neighbor algorithm is computed for the whole raster file. Since the actual shape of the polygon is not considered, artifacts can appear and several pixels can be assigned to the wrong (but geometrically closer) burn date. These artifacts are removed by assigning the affected pixels to the next oldest surrounding fire date.
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/a7a88e2b-c2c0-4e04-863b-ac63463b4c90" width=50% height=50%>
@@ -58,7 +58,7 @@ In a last step, the calculated fire dates are checked for realistic propagation.
 
 # Matching the burned areas with surface information and meteorological data
 
-Most applications of the fire propagation database will involve its combination with different meteorological and/or surface related information. One option to gather such information is Google Earth Engine (GEE), which holds a wide variety of different collections from the earth observation spectrum. Instead of including somewhat arbitrarily chosen datasets directly to the fire propagation database, we decided to provide the necessary code for one meteorological and one remote sensing dataset, i.e. ERA5 and Sentine-2, respectively.
-The code enables the download of ERA5 and Sentinel-2 data from GEE for individual burned area polygons, and it can be easily adapted for other GEE-related datasets as well. Providing code instead of real data decreases the physical space of the dataset, while still .  Different examples guide through the creation of the fire propagation database, as well as the download of the corresponding ERA5- and Sentinel-2 data. 
+Most applications of the fire propagation dataset will involve its combination with different meteorological and/or surface related information. One option to gather such information is Google Earth Engine (GEE), which holds a wide variety of different collections from the earth observation spectrum. Instead of including somewhat arbitrarily chosen datasets directly to the fire propagation database, we decided to provide the necessary code to download one meteorological (ERA5) and multiple remote sensing datasets (Sentine-2, TanDEM-X and Dynamic World).
+The code directly references the individual burned area polygons, and it can be easily adapted for other GEE-related datasets as well. Providing code instead of real data decreases the physical space of the dataset, while offering maximum freedom of choice regarding the collectios one wishes to include. Different examples guide through the creation of the fire propagation database, as well as the download of the corresponding ERA5 and remote sensing data. 
 
 
