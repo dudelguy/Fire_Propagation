@@ -1,9 +1,9 @@
 # Creating your own Wildfire Propagation Database
 
 This repository contains the code base for the creation of a fire propagation dataset by combining burned area polygons and active fire detection points.
-For every burned area, fire propagation is calculated based to active fire detections from remote sensing sensors. The revisiting time of the sensor limits the fire propagation inverval. 
+For every burned area, fire propagation is calculated based to active fire detections from remote sensing sensors. The revisiting time of the sensor limits the fire propagation interval. 
 The resulting dataset consists of equally sized raster files, in which each pixel is either classified as burned or not burned. 
-Every burned area has at least two distinct raster files, each indicating the burned area at a specific time. With increasing time, more of the final burned area polygon is filled with pixels classified as burned, until every pixel of the area is assined to a fire date.
+Every burned area is associated with at least two distinct raster files, each indicating the burned area at a specific time. With increasing time, more of the final burned area polygon is filled with pixels classified as burned, until every pixel of the area is assigned to a fire date.
 
 The following sequence of methods is used to assign a fire date to every pixel of the burned area:
 
