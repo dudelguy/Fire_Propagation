@@ -904,16 +904,17 @@ class check_fire_progression(gis_functions):
                     
         # get minimum date from surrounding pixel
         min_date_surrounding_pixels = min(np.unique(surrounding_pixels))
-        # set dates of the selected burned area patch to the youngest date found in the border pixel
-        clipped_dates_new_min = fire_prog_array.where(labeled_array != investigated_feature,min_date_surrounding_pixels)   
-                    
+  
+        # check, if the surrounding pixels include the next younger date          
         if min_date_surrounding_pixels == old_min_date[1]:
+            # set dates of the selected burned area patch to the youngest date found in the border pixel
+            clipped_dates_new_min = fire_prog_array.where(labeled_array != investigated_feature,min_date_surrounding_pixels) 
             # if the new date is also the next younger date, return the value 1    
             return clipped_dates_new_min, 1
         else:
             # if the new date is not the next younger date of the investigated burned area, 
             # return the value 0 (no normal fire progression observed)       
-            return clipped_dates_new_min, 0 
+            return fire_prog_array, 0 
         
 
     def fire_progression(self, fire_prog_array):
@@ -955,6 +956,59 @@ class check_fire_progression(gis_functions):
         return clipped_dates_prog, cluster_mask_with_correct_progression     
 
 
+    def fire_progression_v2(self, fire_prog_array):
+        '''
+        Helper function to check for "normal" fire progression.
+        Uses new_minima function on all areas from the selected fire date and return all 
+        fire date patches that show normal fire progression (i.e. next younger fire date in direct neighborhood)
+
+        input:
+        fire_prog_array = xarray with the different burn dates. All artifacts are already removed
+
+        output:
+        clipped_dates_prog = updated fire_prog_array, in which the oldest fire date is replaced by the next younger date. 
+                                Can be used iteratively, to check for correct fire progression over multiple iterations
+        cluster_mask_with_correct_progression = list of all patches that show normal fire progression for the investigated fire date
+        '''
+        # copy of the original array, which will be updated and returned
+        clipped_dates_prog = fire_prog_array.copy()
+
+        # initialize empty list to store the mask of the correct progression
+        cluster_mask_with_correct_progression = []
+        # get all burn dates 
+        burn_dates = np.unique(clipped_dates_prog)
+        # set all pixels except those of the earliest fire date to 0               
+        data_transformed = clipped_dates_prog.where(clipped_dates_prog == min(burn_dates), 0)
+        # label all the individual patches that belong to the specific fire date
+        labeled_array, num_features = ndi.label(data_transformed)
+        # set all pixels except those of the second earliest fire date to 0               
+        burn_mask_2 = clipped_dates_prog.where(clipped_dates_prog == burn_dates[1], 0)
+        # label all the individual patches that belong to the specific fire date
+        labeled_array_next_date, num_features_next_date = ndi.label(burn_mask_2)
+        
+        # iterate over every patch identified with the ndi.label function
+        # since ndi.label starts its labelling with 1, the loop aso starts with 1
+        
+        fire_prop_cluster = []
+        for i in range(1,(num_features+1)):
+                
+            feature_mask = labeled_array == i   
+            clump_border = self.create_border_mask(feature_mask) 
+            
+            for k in range(1, (num_features_next_date+1)): 
+                    
+                binary_mask = (labeled_array_next_date == k)    
+                if np.any((binary_mask) & clump_border) == True:
+                    
+                    clipped_dates_prog = clipped_dates_prog.where(labeled_array != i,burn_dates[1])
+                    cluster_mask_with_correct_progression.append(labeled_array == i)
+                    fire_prop_cluster.append(k)
+        
+        fire_prop_cluster = np.unique(fire_prop_cluster)
+        if len(fire_prop_cluster) == num_features_next_date:    
+            return clipped_dates_prog, cluster_mask_with_correct_progression     
+        else: 
+            return clipped_dates_prog, []
 
     def fire_prog_iterations(self, first_cluster, fire_prog, cluster_with_correct_progression, number_of_iterations):
         '''
@@ -968,7 +1022,7 @@ class check_fire_progression(gis_functions):
         iter = 0
         while iter < (number_of_iterations):
             if len(cluster_with_correct_progression)>0:
-                fire_prog, cluster_with_correct_progression = self.fire_progression(fire_prog)
+                fire_prog, cluster_with_correct_progression = self.fire_progression_v2(fire_prog)
             else:
                 break
             iter = iter + 1
@@ -1009,7 +1063,7 @@ class check_fire_progression(gis_functions):
         data_differences_init_fire = len(np.unique((fire_prog_array))[~np.isnan(np.unique((fire_prog_array)))])
 
         # test fire progression for the very first fire date
-        fire_prog, cluster_with_correct_progression = self.fire_progression(fire_prog_array)
+        fire_prog, cluster_with_correct_progression = self.fire_progression_v2(fire_prog_array)
         # save the pixel patches for which fire progression is normal 
         first_cluster = cluster_with_correct_progression
         
@@ -1029,7 +1083,7 @@ class check_fire_progression(gis_functions):
             else:
                 # check for fire progression for specified number of iterations
                 fire_prog, ori_cluster_list = self.fire_prog_iterations(first_cluster, fire_prog, cluster_with_correct_progression, 
-                                                                (number_of_max_iterations>1))    
+                                                                (number_of_max_iterations-1))    
                 return fire_prog, ori_cluster_list
         
         # if there are only two burn dates, return results of the initial fire progression check
