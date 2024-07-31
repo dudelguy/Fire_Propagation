@@ -82,10 +82,32 @@ class gis_functions:
         dilated_mask = ndi.binary_dilation(binary_mask, iterations=radius)
 
         # Erode the dilated mask to include only the border values
-        border_mask = dilated_mask & ~ndi.binary_erosion(dilated_mask, iterations=1, border_value=1)
+        border_mask = dilated_mask & ~ndi.binary_erosion(dilated_mask, iterations=radius, border_value=1)
         # return the border mask
         return border_mask
        
+       
+    def create_border_mask_v2(self, binary_mask, radius = 1):
+        '''
+        function to create a border mask around a given patch of pixel with identical values
+        here, all pixels surrounding a burned area of a specific date are selected
+
+        input: 
+        binary_mask = binary xarray (here: all burned pixel of a specific date are 1 and non-burned pixel are 0)
+        radius = size of the border mask in pixel
+
+        output:
+        border_mask = the border mask, indicating all pixels that belong to the specific border
+        '''
+        # Dilate the binary mask to include neighboring pixels
+        radius = radius  # Adjust the radius based on how many pixels you want to include
+        dilated_mask = ndi.binary_dilation(binary_mask, iterations=radius)
+
+        # Erode the dilated mask to include only the border values
+        border_mask = binary_mask^dilated_mask
+        # return the border mask
+        return border_mask
+
 
     def create_raster_coordinates_from_shp(self, input_geometry, res):
         '''
@@ -231,7 +253,7 @@ class fire_progression(gis_functions):
         binary_mask = ori_cluster_largest
 
         # create border mask for all pixels around the investigated burned area patch
-        border_mask = self.create_border_mask(binary_mask, 1)
+        border_mask = self.create_border_mask_v2(binary_mask, 1)
         
         # extract all pixels surrounding the patch with the oldest fire date
         surrounding_pixels = data_xr_clip.where(border_mask)
@@ -740,7 +762,7 @@ class artifacts(gis_functions):
                     binary_mask = (labeled_array == i)
 
                     #create the border mask for the selected date
-                    border_mask = self.create_border_mask(binary_mask)
+                    border_mask = self.create_border_mask_v2(binary_mask)
 
                     # Use this mask to extract all surrounding pixels
                     surrounding_pixels = np.array(fire_prog_updated)[border_mask]
@@ -850,7 +872,7 @@ class artifacts(gis_functions):
                 # check if distance of all points to any VIIRS detection is greater than the the distance_thresh
                 if np.all(dist_to_points.flatten() > distance_thresh):
                     # if this is the case, create the border mask for the selected date
-                    border_values = self.create_border_mask(binary_mask)
+                    border_values = self.create_border_mask_v2(binary_mask)
                     # get unique values of all non-na border pixels
                     surrounding_pixels = np.array(fire_prog_updated)[border_values]
                     surrounding_pixels = np.unique(surrounding_pixels)[~np.isnan(np.unique(surrounding_pixels))]
@@ -898,7 +920,7 @@ class check_fire_progression(gis_functions):
         # create binary mask for the specific burned area patch
         binary_mask = (labeled_array == investigated_feature)
         # create border mask for all pixels around the investigated burned area patch
-        border_mask = self.create_border_mask(binary_mask, radius = 1)
+        border_mask = self.create_border_mask_v2(binary_mask, radius = 1)
         # Use border mask to extract all surrounding pixels
         surrounding_pixels = fire_prog_array.where(border_mask)
                     
@@ -956,7 +978,7 @@ class check_fire_progression(gis_functions):
         return clipped_dates_prog, cluster_mask_with_correct_progression     
 
 
-    def fire_progression_v2(self, fire_prog_array):
+    def fire_progression_v2(self, fire_prog_array, no_of_sur_pixel):
         '''
         Helper function to check for "normal" fire progression.
         Uses new_minima function on all areas from the selected fire date and return all 
@@ -993,7 +1015,7 @@ class check_fire_progression(gis_functions):
         for i in range(1,(num_features+1)):
                 
             feature_mask = labeled_array == i   
-            clump_border = self.create_border_mask(feature_mask) 
+            clump_border = self.create_border_mask_v2(feature_mask, radius = no_of_sur_pixel) 
             
             for k in range(1, (num_features_next_date+1)): 
                     
@@ -1010,7 +1032,7 @@ class check_fire_progression(gis_functions):
         else: 
             return clipped_dates_prog, []
 
-    def fire_prog_iterations(self, first_cluster, fire_prog, cluster_with_correct_progression, number_of_iterations):
+    def fire_prog_iterations(self, first_cluster, fire_prog, cluster_with_correct_progression, number_of_iterations, no_of_sur_pixel):
         '''
         helper function to check for "normal" fire progression
         executes the loop that checks for normal fire progression over n iterations
@@ -1022,7 +1044,7 @@ class check_fire_progression(gis_functions):
         iter = 0
         while iter < (number_of_iterations):
             if len(cluster_with_correct_progression)>0:
-                fire_prog, cluster_with_correct_progression = self.fire_progression_v2(fire_prog)
+                fire_prog, cluster_with_correct_progression = self.fire_progression_v2(fire_prog, no_of_sur_pixel)
             else:
                 break
             iter = iter + 1
@@ -1043,7 +1065,7 @@ class check_fire_progression(gis_functions):
         return fire_prog, ori_cluster_list
 
 
-    def fire_prog_with_iterations(self, fire_prog_array, number_of_max_iterations):
+    def fire_prog_with_iterations(self, fire_prog_array, number_of_max_iterations, no_of_sur_pixel):
         '''
         Final function to check for "normal" fire progression.
         Uses the helper function fire_progression iteratively to monitor the fire progression over a specified number of fire dates
@@ -1063,7 +1085,7 @@ class check_fire_progression(gis_functions):
         data_differences_init_fire = len(np.unique((fire_prog_array))[~np.isnan(np.unique((fire_prog_array)))])
 
         # test fire progression for the very first fire date
-        fire_prog, cluster_with_correct_progression = self.fire_progression_v2(fire_prog_array)
+        fire_prog, cluster_with_correct_progression = self.fire_progression_v2(fire_prog_array, no_of_sur_pixel = 1)
         # save the pixel patches for which fire progression is normal 
         first_cluster = cluster_with_correct_progression
         
@@ -1076,14 +1098,14 @@ class check_fire_progression(gis_functions):
             if ((data_differences_init_fire-2) < (number_of_max_iterations-1)):
                 # check for fire progression for all the different dates 
                 fire_prog, ori_cluster_list = self.fire_prog_iterations(first_cluster, fire_prog, cluster_with_correct_progression, 
-                                                                (data_differences_init_fire-2))      
+                                                                (data_differences_init_fire-2), no_of_sur_pixel = 1)      
                 return fire_prog, ori_cluster_list
 
             # if the remaining number of fire dates is larger than the number of iterations, start here
             else:
                 # check for fire progression for specified number of iterations
                 fire_prog, ori_cluster_list = self.fire_prog_iterations(first_cluster, fire_prog, cluster_with_correct_progression, 
-                                                                (number_of_max_iterations-1))    
+                                                                (number_of_max_iterations-1), no_of_sur_pixel = 1)    
                 return fire_prog, ori_cluster_list
         
         # if there are only two burn dates, return results of the initial fire progression check
