@@ -556,8 +556,8 @@ class active_fire_detection():
         # uses columnds "LASTUPDATE" and "FIREDATE" from the EFFIS dataset and adds/substracts the additionaly number of days
         # the investigated dataset of burned areas might have different names for the first and last fire dates. 
         # -> change "LASTUPDATE" and "FIREDATE" accordingly
-        top_date = pd.to_datetime(selected_poly[self.start_fire]) + pd.Timedelta(days=day_thresh)
-        low_date = pd.to_datetime(selected_poly[self.end_fire]) - pd.Timedelta(days=day_thresh)
+        top_date = pd.to_datetime(selected_poly[self.start_fire]) - pd.Timedelta(days=day_thresh)
+        low_date = pd.to_datetime(selected_poly[self.end_fire]) + pd.Timedelta(days=day_thresh)
 
         # extract all active fire detections inside of the buffered zone of the selected burned area polygon
         sel_fire_points = active_fire_data[active_fire_data.within(selected_poly["buffer"])].copy()
